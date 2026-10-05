@@ -11,11 +11,24 @@ class LoftSerializer(serializers.ModelSerializer):
         model = Loft
         fields = ("id", "name", "location", "notes", "rollCount", "created_at")
         read_only_fields = ("id", "rollCount", "created_at")
+        extra_kwargs = {
+            # 改名单独走 rename 动作，这里给出明确的撞名提示
+            "name": {
+                "error_messages": {"unique": "该帆布间名已存在，两间不得撞名"},
+            }
+        }
 
     def get_rollCount(self, obj):
         if hasattr(obj, "roll_count"):
             return obj.roll_count
         return obj.rolls.count()
+
+    def validate_name(self, value):
+        """新名不得为空白；统一去首尾空格后再比较。"""
+        cleaned = value.strip() if isinstance(value, str) else value
+        if not cleaned:
+            raise serializers.ValidationError("帆布间名不得为空")
+        return cleaned
 
 
 class ClothRollSerializer(serializers.ModelSerializer):

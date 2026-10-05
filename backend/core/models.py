@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Loft(models.Model):
-    name = models.CharField(max_length=120)
+    name = models.CharField(max_length=120, unique=True)
     location = models.CharField(max_length=200, blank=True, default="")
     notes = models.TextField(blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)

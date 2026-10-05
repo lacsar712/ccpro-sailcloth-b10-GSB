@@ -7,6 +7,7 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 const showNav = computed(() => route.name !== 'login')
+const isAdmin = computed(() => auth.user?.role === 'admin')
 
 function logout() {
   auth.logout()
@@ -27,6 +28,7 @@ function logout() {
       </div>
       <nav>
         <router-link to="/">晾晒架</router-link>
+        <router-link v-if="isAdmin" to="/lofts">帆布间改名</router-link>
       </nav>
       <div class="nav-secondary">
         <p class="nav-sec-label">台账（次要）</p>
