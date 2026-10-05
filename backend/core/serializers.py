@@ -4,6 +4,23 @@ from .models import ClothRoll, DipRun, Loft
 from .rules import can_mark_roll_cured
 
 
+class LoftRenameSerializer(serializers.Serializer):
+    """帆布间改名专用入参：只接收间名，杜绝顺手改其他字段。"""
+
+    name = serializers.CharField(max_length=120)
+
+    def validate_name(self, value):
+        name = (value or "").strip()
+        if not name:
+            raise serializers.ValidationError("间名不得为空")
+        qs = Loft.objects.filter(name=name)
+        if self.instance is not None:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("已存在同名帆布间，两间不得撞名")
+        return name
+
+
 class LoftSerializer(serializers.ModelSerializer):
     rollCount = serializers.SerializerMethodField()
 
@@ -11,6 +28,17 @@ class LoftSerializer(serializers.ModelSerializer):
         model = Loft
         fields = ("id", "name", "location", "notes", "rollCount", "created_at")
         read_only_fields = ("id", "rollCount", "created_at")
+
+    def validate_name(self, value):
+        name = (value or "").strip()
+        if not name:
+            raise serializers.ValidationError("间名不得为空")
+        qs = Loft.objects.filter(name=name)
+        if self.instance is not None:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("已存在同名帆布间，两间不得撞名")
+        return name
 
     def get_rollCount(self, obj):
         if hasattr(obj, "roll_count"):

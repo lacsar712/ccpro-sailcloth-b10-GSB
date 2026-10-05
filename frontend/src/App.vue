@@ -27,6 +27,7 @@ function logout() {
       </div>
       <nav>
         <router-link to="/">晾晒架</router-link>
+        <router-link v-if="auth.user?.role === 'admin'" to="/lofts">帆布间改名</router-link>
       </nav>
       <div class="nav-secondary">
         <p class="nav-sec-label">台账（次要）</p>

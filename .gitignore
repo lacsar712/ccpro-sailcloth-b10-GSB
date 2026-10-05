@@ -7,3 +7,6 @@ node_modules/
 dist/
 staticfiles/
 *.egg-info/
+
+# 本地 SQLite 测试库
+.test_sqlite.db
